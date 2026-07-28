@@ -11,17 +11,13 @@ base {
 }
 
 repositories {
-    // 如果后面有特殊仓库可加
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
+
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-    // ★★★ 添加 Netty HAProxy 编解码器并打包进 JAR
-    implementation 'io.netty:netty-codec-haproxy:4.2.13.Final'
-    include 'io.netty:netty-codec-haproxy:4.2.13.Final'
 }
 
 processResources {
