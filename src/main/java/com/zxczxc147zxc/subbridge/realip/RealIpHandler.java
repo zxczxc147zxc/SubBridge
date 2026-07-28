@@ -1,5 +1,6 @@
 package com.zxczxc147zxc.subbridge.realip;
 
+import com.zxczxc147zxc.subbridge.realip.config.SubBridgeRealIPConfig;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -7,7 +8,9 @@ import io.netty.util.AttributeKey;
 import io.netty.util.IllegalReferenceCountException;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class RealIpHandler extends ChannelInboundHandlerAdapter {
     public static final AttributeKey<String> REAL_IP_KEY = AttributeKey.valueOf("subbridge_real_ip");
@@ -16,6 +19,18 @@ public class RealIpHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (Boolean.TRUE.equals(ctx.channel().attr(IP_EXTRACTED).get())) {
+            ctx.fireChannelRead(msg);
+            return;
+        }
+
+        InetSocketAddress remoteAddr = (InetSocketAddress) ctx.channel().remoteAddress();
+        if (remoteAddr == null) {
+            ctx.fireChannelRead(msg);
+            return;
+        }
+        String remoteHost = remoteAddr.getAddress().getHostAddress();
+        List<String> trusted = SubBridgeRealIPConfig.getInstance().getTrustedProxies();
+        if (!trusted.contains(remoteHost)) {
             ctx.fireChannelRead(msg);
             return;
         }

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 public class SubBridgeRealIPConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -15,11 +17,14 @@ public class SubBridgeRealIPConfig {
 
     private String hubAddress = "127.0.0.1";
     private int hubPort = 25566;
+    private List<String> trustedProxies = Arrays.asList("127.0.0.1", "::1");
 
     public String getHubAddress() { return hubAddress; }
     public void setHubAddress(String hubAddress) { this.hubAddress = hubAddress; }
     public int getHubPort() { return hubPort; }
     public void setHubPort(int hubPort) { this.hubPort = hubPort; }
+    public List<String> getTrustedProxies() { return trustedProxies; }
+    public void setTrustedProxies(List<String> trustedProxies) { this.trustedProxies = trustedProxies; }
 
     public static SubBridgeRealIPConfig getInstance() {
         if (instance == null) {
