@@ -1,8 +1,4 @@
 SubBridge – Fabric 跨服代理桥梁 Mod
-https://img.shields.io/badge/License-MIT-yellow.svg
-https://img.shields.io/badge/Mod%2520Loader-Fabric-blue
-https://img.shields.io/badge/Minecraft-26.2%2520(Chaos%2520Cubed)-green
-https://img.shields.io/badge/Java-25-orange
 
 SubBridge 是一个为 Minecraft Java Edition 26.2 开发的 Fabric 模组，它通过一个高性能的 TCP 代理 让多个子服共享同一个公网端口，并根据玩家信息（UUID、用户名、IP）智能路由到对应的后端服务器，轻松实现“统一入口”和“跨服传送”体验。
 
