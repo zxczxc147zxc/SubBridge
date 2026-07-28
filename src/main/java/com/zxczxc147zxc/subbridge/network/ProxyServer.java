@@ -120,10 +120,17 @@ public class ProxyServer {
             if (ServerManager.getInstance().getProxyConfig().isEnableProxyProtocol() && msg instanceof HAProxyMessage) {
                 HAProxyMessage proxyMsg = (HAProxyMessage) msg;
                 if (proxyMsg.command() != null && proxyMsg.command().name().equals("PROXY")) {
-                    String realIp = proxyMsg.sourceAddress();
-                    if (realIp != null && !realIp.isEmpty()) {
-                        clientIp = realIp;
-                        ctx.channel().attr(AttributeKeys.CLIENT_IP).set(clientIp);
+                    InetSocketAddress remoteAddr = (InetSocketAddress) ctx.channel().remoteAddress();
+                    String remoteIp = remoteAddr != null ? remoteAddr.getAddress().getHostAddress() : null;
+                    boolean trusted = ServerManager.getInstance().getProxyConfig().getTrustedProxies().contains(remoteIp);
+                    if (trusted) {
+                        String realIp = proxyMsg.sourceAddress();
+                        if (realIp != null && !realIp.isEmpty()) {
+                            clientIp = realIp;
+                            ctx.channel().attr(AttributeKeys.CLIENT_IP).set(clientIp);
+                        }
+                    } else {
+                        SubBridgeMod.LOGGER.warn("[SubBridge] rejected PROXY header from untrusted source: {}", remoteIp);
                     }
                 }
                 proxyMsg.release();

@@ -1,5 +1,8 @@
 package com.zxczxc147zxc.subbridge.config;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ProxyConfig {
     private String externalAddress = "127.0.0.1";
     private int proxyPort = 25566;
@@ -8,7 +11,8 @@ public class ProxyConfig {
     private int mainServerPort = 0;
     private String routeMode = "ip_mode";
     private int externalPort = 0;
-    private boolean enableProxyProtocol = false; // 新增
+    private boolean enableProxyProtocol = false;
+    private List<String> trustedProxies = Arrays.asList("127.0.0.1", "::1");
 
     public String getExternalAddress() { return externalAddress; }
     public void setExternalAddress(String externalAddress) { this.externalAddress = externalAddress; }
@@ -26,4 +30,6 @@ public class ProxyConfig {
     public void setExternalPort(int externalPort) { this.externalPort = externalPort; }
     public boolean isEnableProxyProtocol() { return enableProxyProtocol; }
     public void setEnableProxyProtocol(boolean enableProxyProtocol) { this.enableProxyProtocol = enableProxyProtocol; }
+    public List<String> getTrustedProxies() { return trustedProxies; }
+    public void setTrustedProxies(List<String> trustedProxies) { this.trustedProxies = trustedProxies; }
 }

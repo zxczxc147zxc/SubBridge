@@ -30,6 +30,7 @@ public class ServerManager {
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private final Map<String, Future<?>> detectionTasks = new ConcurrentHashMap<>();
     private final Map<String, ServerEntry> tempEntries = new ConcurrentHashMap<>();
+    private final Map<String, Thread> outputReaders = new ConcurrentHashMap<>();
 
     private ServerManager() {}
 
@@ -80,7 +81,9 @@ public class ServerManager {
                         "# 若不设置或设为 0，则使用 proxyPort\n" +
                         "externalPort=0\n" +
                         "# 是否启用 PROXY Protocol 支持（仅当使用内网穿透且开启 PROXY 时设为 true）\n" +
-                        "enableProxyProtocol=false\n";
+                        "enableProxyProtocol=false\n" +
+                        "# 可信代理 IP 列表（逗号分隔，仅这些 IP 发送的 PROXY 头会被信任，注意，在接受别人的配置文件或者自己配置时，不要添加未受信任的IP，因为可能会导致IP伪造！）\n" +
+                        "trustedProxies=127.0.0.1,::1\n";
                 Files.write(configFile, defaultConfig.getBytes());
                 SubBridgeMod.LOGGER.info("[SubBridge] created default proxy config: {}", configFile);
             }
@@ -98,8 +101,9 @@ public class ServerManager {
             proxyConfig.setMainServerPort(Integer.parseInt(props.getProperty("mainServerPort", "0")));
             proxyConfig.setRouteMode(props.getProperty("routeMode", "ip_mode"));
             proxyConfig.setExternalPort(Integer.parseInt(props.getProperty("externalPort", "0")));
-            // ★★★ 新增：读取 PROXY Protocol 开关
             proxyConfig.setEnableProxyProtocol(Boolean.parseBoolean(props.getProperty("enableProxyProtocol", "false")));
+            String trustedStr = props.getProperty("trustedProxies", "127.0.0.1,::1");
+            proxyConfig.setTrustedProxies(Arrays.asList(trustedStr.split(",")));
 
         } catch (IOException e) {
             SubBridgeMod.LOGGER.error("[SubBridge] failed to load proxy config", e);
@@ -331,9 +335,10 @@ public class ServerManager {
             } catch (IOException e) {
                 // 流关闭时正常退出
             }
-        });
+        }, "subbridge-output-" + name);
         outputReader.setDaemon(true);
         outputReader.start();
+        outputReaders.put(name, outputReader);
 
         runningProcesses.put(name, process);
         serverReadyMap.put(name, false);
@@ -401,6 +406,7 @@ public class ServerManager {
         if (p == null || !p.isAlive()) {
             runningProcesses.remove(name);
             serverReadyMap.remove(name);
+            outputReaders.remove(name);
             return;
         }
 
@@ -409,10 +415,12 @@ public class ServerManager {
             p.destroy();
             runningProcesses.remove(name);
             serverReadyMap.remove(name);
+            outputReaders.remove(name);
             SubBridgeMod.LOGGER.warn("[SubBridge] {} terminated (config missing)", name);
             return;
         }
 
+        // 第1级：发送 stop 命令，等待 30 秒优雅关闭
         try {
             OutputStream stdin = p.getOutputStream();
             stdin.write("stop\n".getBytes());
@@ -420,23 +428,50 @@ public class ServerManager {
         } catch (Exception ignored) {}
 
         try {
-            boolean exited = p.waitFor(30, TimeUnit.SECONDS);
-            if (exited) {
+            if (p.waitFor(30, TimeUnit.SECONDS)) {
                 runningProcesses.remove(name);
                 serverReadyMap.remove(name);
+                outputReaders.remove(name);
                 SubBridgeMod.LOGGER.info("[SubBridge] {} stopped", name);
                 return;
             }
         } catch (InterruptedException ignored) {}
 
+        // 第2级：30秒超时 → 温和销毁 (SIGTERM)，再等 5 秒
         if (p.isAlive()) {
+            SubBridgeMod.LOGGER.warn("[SubBridge] {} did not stop in 30s, sending destroy()", name);
             p.destroy();
             try {
-                Thread.sleep(500);
+                if (p.waitFor(5, TimeUnit.SECONDS)) {
+                    runningProcesses.remove(name);
+                    serverReadyMap.remove(name);
+                    outputReaders.remove(name);
+                    SubBridgeMod.LOGGER.info("[SubBridge] {} stopped after destroy()", name);
+                    return;
+                }
             } catch (InterruptedException ignored) {}
         }
+
+        // 第3级：暴力终止 + 关闭流 + 中断 reader 线程
         if (p.isAlive()) {
+            SubBridgeMod.LOGGER.warn("[SubBridge] {} force killing process", name);
             p.destroyForcibly();
+
+            // 关闭输入流，强制唤醒阻塞在 readLine() 的 reader 线程
+            try {
+                p.getInputStream().close();
+            } catch (IOException ignored) {}
+
+            // 等待操作系统回收
+            try {
+                p.waitFor(1, TimeUnit.SECONDS);
+            } catch (InterruptedException ignored) {}
+        }
+
+        // 中断并清理 outputReader 线程
+        Thread reader = outputReaders.remove(name);
+        if (reader != null && reader.isAlive()) {
+            reader.interrupt();
         }
 
         runningProcesses.remove(name);
@@ -476,6 +511,7 @@ public class ServerManager {
         }
         runningProcesses.clear();
         serverReadyMap.clear();
+        outputReaders.clear();
         SubBridgeMod.LOGGER.info("[SubBridge] all servers stopped");
     }
 
