@@ -89,7 +89,7 @@ json
     "path": "./subservers/lobby",
     "jar": "server.jar",
     "jvmArgs": "-Xmx1024M",
-    "startCommand": "start.bat"   // 可选，优先于 jar + jvmArgs
+    "startCommand": "start.bat"
   }
 ]
 
