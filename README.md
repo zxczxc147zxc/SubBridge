@@ -101,12 +101,12 @@ JDK 25（下载）
 Git
 
 克隆并构建
-bash
+```bash
 git clone https://github.com/zxczxc147zxc/SubBridge.git
 cd SubBridge
 ./gradlew build      # 在 Windows 下使用 gradlew.bat
 构建产物位于 build/libs/，将生成的 JAR 放入服务端的 mods/ 文件夹即可。
-
+```
 📖 命令大全
 命令	权限	说明
 /sub server <name>	玩家	传送至指定子服（需要代理在线）
