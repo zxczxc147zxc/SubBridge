@@ -107,16 +107,15 @@ cd SubBridge
 ./gradlew build      # 在 Windows 下使用 gradlew.bat
 构建产物位于 build/libs/，将生成的 JAR 放入服务端的 mods/ 文件夹即可。
 ```
-```📖 命令大全
-命令	权限	说明
-/sub server <name>	玩家	传送至指定子服（需要代理在线）
-/sub start <name>	管理员	启动子服进程
-/sub stop <name>	管理员	停止子服进程
-/sub list	任意	列出所有子服及运行状态
-/sub reload	管理员	热重载配置文件
-/sub registerport <port> [name]	管理员	注册外部子服（临时）
-/sub unregister <name>	管理员	移除临时子服
-```
+| 命令 | 说明 | 权限 |
+|------|------|------|
+| `/sub server <name>` | 传送至指定子服（需要代理在线） | 玩家 |
+| `/sub start <name>` | 启动子服进程 | 管理员 |
+| `/sub stop <name>` | 停止子服进程 | 管理员 |
+| `/sub list` | 列出所有子服及运行状态 | 任意 |
+| `/sub reload` | 热重载配置文件 | 管理员 |
+| `/sub registerport <port> [name]` | 注册外部子服（临时） | 管理员 |
+| `/sub unregister <name>` | 移除临时子服 | 管理员 |
 🤝 贡献
 欢迎提出 Issue 和 Pull Request！
 如果你发现 Bug 或想增加新功能，请先开 Issue 讨论，避免重复劳动。
