@@ -65,13 +65,21 @@ PROXY Protocol 支持
 properties
 # SubBridge 代理配置文件
 externalAddress=127.0.0.1      # 玩家连接的公网地址
+
 proxyPort=25566                # 代理监听端口
+
 cacheTimeoutSeconds=1          # 缓存有效期（秒）
+
 enableIpRouting=true           # 是否启用 IP 路由
+
 mainServerPort=0               # 主服端口（0=自动读取 server.properties）
+
 routeMode=ip_mode              # 路由模式：ip_mode / strict_ip
+
 externalPort=0                 # 公网映射端口（默认同 proxyPort）
+
 enableProxyProtocol=false      # 是否开启 PROXY Protocol
+
 2. 子服定义文件：servers.json
 json
 [
