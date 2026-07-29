@@ -117,7 +117,8 @@ cd SubBridge
 | `/sub registerport <port> [name]` | 注册外部子服（临时） | 管理员 |
 | `/sub unregister <name>` | 移除临时子服 | 管理员 |
 
-强烈建议配合我们另一个项目https://github.com/zxczxc147zxc/CrossChatBridge它提供了跨服聊天和显示子服的玩家
+强烈建议配合我们另一个项目https://github.com/zxczxc147zxc/CrossChatBridge 它提供了跨服聊天和显示子服的玩家
+
 🤝 贡献
 欢迎提出 Issue 和 Pull Request！
 如果你发现 Bug 或想增加新功能，请先开 Issue 讨论，避免重复劳动。
