@@ -116,6 +116,7 @@ cd SubBridge
 | `/sub reload` | 热重载配置文件 | 管理员 |
 | `/sub registerport <port> [name]` | 注册外部子服（临时） | 管理员 |
 | `/sub unregister <name>` | 移除临时子服 | 管理员 |
+
 🤝 贡献
 欢迎提出 Issue 和 Pull Request！
 如果你发现 Bug 或想增加新功能，请先开 Issue 讨论，避免重复劳动。
