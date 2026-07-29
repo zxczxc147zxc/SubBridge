@@ -81,7 +81,7 @@ externalPort=0                 # 公网映射端口（默认同 proxyPort）
 enableProxyProtocol=false      # 是否开启 PROXY Protocol
 
 2. 子服定义文件：servers.json
-json
+```json
 [
   {
     "name": "lobby",
@@ -92,6 +92,7 @@ json
     "startCommand": "start.bat"
   }
 ]
+```
 
 🛠️ 构建与运行
 前置条件
