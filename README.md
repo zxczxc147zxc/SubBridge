@@ -80,7 +80,7 @@ externalPort=0                 # 公网映射端口（默认同 proxyPort）
 
 enableProxyProtocol=false      # 是否开启 PROXY Protocol
 
-2. 子服定义文件：servers.json
+2. 子服定义文件：servers.json(注意：`startCommand` 为可选字段，优先级高于 `jar` 和 `jvmArgs`。)
 ```json
 [
   {
