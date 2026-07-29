@@ -92,6 +92,7 @@ json
     "startCommand": "start.bat"   // 可选，优先于 jar + jvmArgs
   }
 ]
+
 🛠️ 构建与运行
 前置条件
 JDK 25（下载）
